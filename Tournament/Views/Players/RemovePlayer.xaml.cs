@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Tournament.Exceptions;
 using Tournament.Models;
 using Tournament.ViewModels;
 using Tournament.Views.Players;
@@ -34,79 +35,66 @@ namespace Tournament.Views
             errorNameWindow.ErrorContent.Text = text;
             errorNameWindow.Show();
         }
+        private Player Read(string name, string surname ,string id)
+        {
+            int ID;
+            Player player;
+            try
+            {
+                ID = int.Parse(IDTextBox.Text);
+                if (ID < 0)
+                    throw new IDException("Negative ID ",id);
+                else
+                    player = PlayersViewModel.Players.FindByID(ID);
+
+                if (player == null)
+                {
+                    throw new IDException("No player with following ID",id);
+                }
+                if (name != player.Name)
+                {
+                    throw new NameException("Wrong Name",name);
+                }
+                if (surname != player.Surname)
+                {
+                    throw new SurnameException("Wrong Surname",surname);
+                }
+                
+            }
+            catch(IDException) 
+            {
+                throw new IDException("Wrong ID", id);
+            }
+
+            return player;
+        }
         private void Button_Click_RemovePlayer(object sender, RoutedEventArgs e)
         {
-            int id;
-            string name = NameTextBox.Text;
-            string surname = SurnameTextBox.Text;
-            Player player = null;
-            bool IsNameValid;
-            bool IsSurnameValid;
-            bool IsPlayerValid = false;
-            bool IsIDValid;
-
-
-            try 
+            try
             {
-                id = int.Parse(IDTextBox.Text);
-                if (id >= 0)
-                {
-                    IsIDValid = true;
-                }
-                else
-                {
-                    Error("Bad ID");
-                    return;
-                }
-            }
-            catch 
-            {
-                Error("ID is null!");
-                return;
-            }
-
-            if (IsIDValid)
-                player = PlayersViewModel.Players.FindByID(id);
-            if(player == null)
-            {
-                Error("No player with following ID");
-                return;
-            }
-
-            if (name != string.Empty)
-            {
-                IsNameValid = true;
-            }
-            else
-            {
-                Error("Please enter the Name");
-                return;
-            }
-
-            if (surname != string.Empty)
-            {
-                IsSurnameValid = true;
-            }
-            else
-            {
-                Error("Please enter the Surname");
-                return;
-
-            }
-
-            if (IsPlayerValid && IsNameValid && IsSurnameValid && IsIDValid && player.Name == name && player.Surname == surname)
-            {
-                PlayersViewModel.Players.Remove(id);
+                Player player = Read( NameTextBox.Text, SurnameTextBox.Text, IDTextBox.Text);
+                
+                PlayersViewModel.Players.Remove(player);
                 ViewPlayers.Refresh();
                 NavigationService.Navigate(ViewPlayers);
                 Error("Succesfully removed Player");
-                
+
             }
-            else
+            catch (NameException ex)
             {
-                Error("Wrong data");
-                return;
+                Error(ex.Message);
             }
+            catch (SurnameException ex)
+            {
+                Error(ex.Message);
+            }
+            catch (IDException ex)
+            {
+                Error(ex.Message);
+            }
+
+
+           
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {

@@ -36,6 +36,14 @@ namespace Tournament.Models
                 Count--;
             }
         }
+        public void Remove(T t)
+        {
+            if (List.Contains(t))
+            {
+                List.Remove(t);
+                Count--;
+            }
+        }
         /// <summary>
         /// Adds Object T with following ID if ID is free
         /// </summary>

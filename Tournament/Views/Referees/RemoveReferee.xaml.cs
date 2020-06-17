@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Tournament.Exceptions;
 using Tournament.Models;
 using Tournament.ViewModels;
 
@@ -19,80 +20,66 @@ namespace Tournament.Views.Referees
             ViewReferees = viewReferees;
             InitializeComponent();
         }
+        private Referee Read(string name, string surname, string id)
+        {
+            int ID;
+            Referee referee;
+            try
+            {
+                ID = int.Parse(IDTextBox.Text);
+                if (ID < 0)
+                    throw new IDException("Negative ID ", id);
+                else
+                    referee = RefereesViewModel.Referees.FindByID(ID);
+
+                if (referee == null)
+                {
+                    throw new IDException("No player with following ID", id);
+                }
+                if (name != referee.Name)
+                {
+                    throw new NameException("Wrong Name", name);
+                }
+                if (surname != referee.Surname)
+                {
+                    throw new SurnameException("Wrong Surname", surname);
+                }
+
+            }
+            catch (IDException)
+            {
+                throw new IDException("Wrong ID", id);
+            }
+
+            return referee;
+        }
         private void Button_Click_RemoveReferee(object sender, RoutedEventArgs e)
         {
-            bool IsNameValid;
-            bool IsSurameValid;
-            bool IsRefereeValid;
-            bool IsIDValid;
-            string name = NameTextBox.Text;
-            string surname = SurnameTextBox.Text;
-            int id;
-
-            if(IDTextBox.Text != string.Empty)
+            try
             {
-                id = int.Parse(IDTextBox.Text);
+                Referee referee = Read(NameTextBox.Text, SurnameTextBox.Text, IDTextBox.Text);
 
-                if (id >= 0)
-                {
-                    IsIDValid = true;
-                }
-                else
-                {
-                    Error( "Please enter corect ID");
-                    return;
-                }
-
-            }
-            else
-            {
-                Error( "Please enter ID");
-                return;
-            }
-            Referee referee = RefereesViewModel.Referees.FindByID(id);
-            
-
-            
-            if (name != string.Empty)
-                IsNameValid = true;
-            else
-            {
-                Error( "Please enter the Name");
-                return;
-            }
-
-            if (surname != string.Empty)
-                IsSurameValid = true;
-            else
-            {
-                Error("Please enter the Surname");
-                return;
-
-            }
-
-            if (referee != null)
-            {
-                IsRefereeValid = true;
-            }
-            else
-            {
-                Error("There is no such referee in the database");
-                return;
-
-            }
-
-            if (IsNameValid && IsRefereeValid && IsSurameValid && IsIDValid && referee.Name == name && referee.Surname == surname)
-            {
-                RefereesViewModel.Referees.Remove(id);
+                RefereesViewModel.Referees.Remove(referee);
                 ViewReferees.Refresh();
                 NavigationService.Navigate(ViewReferees);
-                Error("Succesfully removed Referee");
+                Error("Succesfully removed Player");
+
             }
-            else
+            catch (NameException ex)
             {
-                Error( "There is no such referee in the database");
-                return;
+                Error(ex.Message);
             }
+            catch (SurnameException ex)
+            {
+                Error(ex.Message);
+            }
+            catch (IDException ex)
+            {
+                Error(ex.Message);
+            }
+
+
+
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
