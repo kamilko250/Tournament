@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tournament.Exceptions;
 using Tournament.Models;
 using Tournament.ViewModels;
 using Tournament.Views.Players;
@@ -38,35 +39,40 @@ namespace Tournament.Views
             errorNameWindow.ErrorContent.Text = text;
             errorNameWindow.Show();
         }
-        private void Button_Click_AddPlayer(object sender, RoutedEventArgs e)
+        private Player Read(string name, string surname)
         {
-            string name = NameTextBox.Text;
-            string surname = SurnameTextBox.Text;
-            bool IsNameValid;
-            bool IsSurameValid;
-            
-            if (name != string.Empty)
-                IsNameValid = true;
-            else
+            try
             {
-                Error("Please enter the Name");
-                return;
+                if (name == string.Empty)
+                    throw new NameException("Name is empty");
+                if (surname == string.Empty)
+                    throw new SurnameException("Surname is empty");
+                return new Player() { Name = name, Surname = surname };
             }
-            if (surname != string.Empty)
-                IsSurameValid = true;
-            else
+            catch
             {
-                Error("Please enter the Surname");
-                return;
+                throw;
             }
-
-            if (IsNameValid && IsSurameValid)
+        }
+        private void Button_Click_AddReferee(object sender, RoutedEventArgs e)
+        {
+            Player player;
+            try
             {
-                PlayersViewModel.Players.Add(new Player() { Name = name, Surname = surname, ID = -1 });
+                player = Read(NameTextBox.Text, SurnameTextBox.Text);
+                PlayersViewModel.Players.Add(player);
                 ViewPlayers.Refresh();
-                Error("Succesfully added Player");
                 NavigationService.Navigate(ViewPlayers);
-            }  
+                Error("Succesfully added Referee");
+            }
+            catch (NameException ex)
+            {
+                Error(ex.Message);
+            }
+            catch (SurnameException ex)
+            {
+                Error(ex.Message);
+            }
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tournament.Exceptions;
 using Tournament.Models;
 using Tournament.ViewModels;
 
@@ -28,39 +29,45 @@ namespace Tournament.Views.Referees
             ViewReferees = viewReferees;
             InitializeComponent();
         }
-
+        private void Error(string text)
+        {
+            ErrorWindow errorNameWindow = new ErrorWindow();
+            errorNameWindow.ErrorContent.Text = text;
+            errorNameWindow.Show();
+        }
+        private Referee Read(string name,string surname) 
+        {
+            try 
+            {
+                if (name == string.Empty)
+                    throw new NameException("Name is empty");
+                if (surname == string.Empty)
+                    throw new SurnameException("Surname is empty");
+                return new Referee() { Name = name, Surname = surname};
+            }
+            catch 
+            {
+                throw;
+            }
+        }
         private void Button_Click_AddReferee(object sender, RoutedEventArgs e)
         {
-            string name = NameTextBox.Text;
-            string surname = SurnameTextBox.Text;
-            bool IsNameValid;
-            bool IsSurameValid;
-            if (name != string.Empty)
-                IsNameValid = true;
-            else
+            Referee referee;
+            try
             {
-                ErrorWindow errorNameWindow = new ErrorWindow();
-                errorNameWindow.ErrorContent.Text = "Please enter the Name";
-                errorNameWindow.Show();
-                return;
-            }
-            if (surname != string.Empty)
-                IsSurameValid = true;
-            else
-            {
-                ErrorWindow errorSurnameWindow = new ErrorWindow();
-                errorSurnameWindow.ErrorContent.Text = "Please enter the Surname";
-                errorSurnameWindow.Show();
-                return;
-            }
-            if (IsNameValid && IsSurameValid)
-            {
-                RefereesViewModel.Referees.Add(new Referee() { Name = name, Surname = surname, ID = -1 });
+                referee = Read(NameTextBox.Text, SurnameTextBox.Text);
+                RefereesViewModel.Referees.Add(referee);
                 ViewReferees.Refresh();
                 NavigationService.Navigate(ViewReferees);
-                ErrorWindow errorWindow = new ErrorWindow();
-                errorWindow.ErrorContent.Text = "Succesfully added Referee";
-                errorWindow.Show();
+                Error("Succesfully added Referee");
+            }
+            catch (NameException ex)
+            {
+                Error(ex.Message);
+            }
+            catch (SurnameException ex)
+            {
+                Error(ex.Message);
             }
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
