@@ -39,33 +39,25 @@ namespace Tournament.Views
         {
             int ID;
             Player player;
-            try
-            {
-                ID = int.Parse(IDTextBox.Text);
-                if (ID < 0)
-                    throw new IDException("Negative ID ",id);
-                else
-                    player = PlayersViewModel.Players.FindByID(ID);
+            
+            ID = int.Parse(IDTextBox.Text);
+            if (ID < 0)
+                throw new IDException("Negative ID ", id);
+            else
+                player = PlayersViewModel.Players.FindByID(ID);
 
-                if (player == null)
-                {
-                    throw new IDException("No player with following ID",id);
-                }
-                if (name != player.Name)
-                {
-                    throw new NameException("Wrong Name",name);
-                }
-                if (surname != player.Surname)
-                {
-                    throw new SurnameException("Wrong Surname",surname);
-                }
-                
-            }
-            catch(IDException) 
+            if (player == null)
             {
-                throw new IDException("Wrong ID", id);
+                throw new IDException("No player with following ID", id);
             }
-
+            if (name != player.Name)
+            {
+                throw new NameException("Wrong Name", name);
+            }
+            if (surname != player.Surname)
+            {
+                throw new SurnameException("Wrong Surname", surname);
+            }
             return player;
         }
         private void Button_Click_RemovePlayer(object sender, RoutedEventArgs e)

@@ -54,7 +54,7 @@ namespace Tournament.Views
                 throw;
             }
         }
-        private void Button_Click_AddReferee(object sender, RoutedEventArgs e)
+        private void Button_Click_AddPlayer(object sender, RoutedEventArgs e)
         {
             Player player;
             try
@@ -63,7 +63,7 @@ namespace Tournament.Views
                 PlayersViewModel.Players.Add(player);
                 ViewPlayers.Refresh();
                 NavigationService.Navigate(ViewPlayers);
-                Error("Succesfully added Referee");
+                Error("Succesfully added Player");
             }
             catch (NameException ex)
             {

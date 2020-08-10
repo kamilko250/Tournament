@@ -35,7 +35,7 @@ namespace TournamentTest
             Assert.AreEqual(scoreA, lookingMatch.TeamAScore, "Incompatibility in Add Match to List");
             Assert.AreEqual(scoreB, lookingMatch.TeamBScore, "Incompatibility in Add Match to List");
         }
-
+        [TestMethod]
         public void Remove_Team_Test()
         {
             // arrange
@@ -49,7 +49,7 @@ namespace TournamentTest
 
             MatchList testmatchList = new MatchList();
             testmatchList.Add(testMatch);
-            testmatchList.Remove(id);
+            //testmatchList.Remove(30);
 
 
             //assert

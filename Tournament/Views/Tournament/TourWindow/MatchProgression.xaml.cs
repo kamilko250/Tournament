@@ -98,7 +98,7 @@ namespace Tournament.Views.Tournament.TourWindow
                 return;
             }
 
-            if (teamAPlayers.Count > PlayersNeededToPlay)
+            if (teamAPlayers.Count >= PlayersNeededToPlay)
             {
                 IsTeamAPlayersValid = true;
             }
@@ -108,7 +108,7 @@ namespace Tournament.Views.Tournament.TourWindow
                 return;
             }
 
-            if (teamBPlayers.Count > PlayersNeededToPlay)
+            if (teamBPlayers.Count >= PlayersNeededToPlay)
             {
                 IsTeamBPlayersValid = true;
             }
